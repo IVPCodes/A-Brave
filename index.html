@@ -2,792 +2,212 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Youtweeb</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>New Tab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --red: #ff0000;
-    --red-dark: #cc0000;
-    --bg: #0f0f0f;
-    --bg2: #1a1a1a;
-    --bg3: #272727;
-    --text: #f1f1f1;
-    --text2: #aaaaaa;
-    --border: #3f3f3f;
-    --sidebar-w: 240px;
+    --bg: #0a0505;
+    --bg2: #120808;
+    --panel: #170a0a;
+    --panel2: #1d0c0c;
+    --border: rgba(226, 19, 19, 0.18);
+    --border-strong: rgba(226, 19, 19, 0.42);
+    --red: #e21313;
+    --red-dim: #8a0f0f;
+    --amber: #ff7a45;
+    --text: #f5e9e9;
+    --muted: #8a6a6a;
+    --mono: 'JetBrains Mono', ui-monospace, 'Cascadia Code', Consolas, monospace;
+
+
+    --bg-image: none;
   }
 
-  body {
-    font-family: 'Roboto', 'Arial', sans-serif;
+  html, body {
+    height: 100%;
     background: var(--bg);
     color: var(--text);
-    min-height: 100vh;
-    overflow-x: hidden;
+    font-family: var(--mono);
+    line-height: 1.6;
+    overflow: hidden;
   }
 
-  /* ── Header ── */
-  header {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    height: 56px;
-    background: var(--bg);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 16px;
-    z-index: 100;
-    border-bottom: 1px solid var(--border);
+  ::selection { background: var(--red); color: #0a0505; }
+
+
+  .wallpaper {
+    position: fixed; inset: 0; z-index: 0;
+    background-image: linear-gradient(rgba(10,5,5,.78), rgba(10,5,5,.78)), var(--bg-image);
+    background-size: cover;
+    background-position: center;
   }
 
-  .header-left {
-    display: flex;
-    align-items: center;
-    gap: 16px;
+
+  body::after {
+    content: ''; position: fixed; inset: 0; z-index: 1; pointer-events: none;
+    background:
+      radial-gradient(ellipse at 20% 0%, rgba(226,19,19,0.14), transparent 55%),
+      radial-gradient(ellipse at 100% 100%, rgba(0,0,0,0.65), transparent 60%);
   }
 
-  .menu-btn {
-    background: none;
-    border: none;
+
+  body::before {
+    content: ''; position: fixed; inset: 0; z-index: 2; pointer-events: none;
+    background: repeating-linear-gradient(
+      to bottom,
+      rgba(226,19,19,0.03) 0px, rgba(226,19,19,0.03) 1px,
+      transparent 1px, transparent 3px
+    );
+    mix-blend-mode: overlay;
+  }
+
+  .page { position: relative; z-index: 3; height: 100%; }
+
+
+  .settings {
+    position: absolute; top: 28px; right: 28px;
+    width: 36px; height: 36px;
+    display: grid; place-items: center;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    color: var(--muted);
     cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    padding: 8px;
-    border-radius: 50%;
+    transition: color .15s, border-color .15s, background .15s;
   }
-  .menu-btn:hover { background: var(--bg3); }
-  .menu-btn span {
-    display: block;
-    width: 18px;
-    height: 2px;
-    background: var(--text);
+  .settings:hover { color: var(--red); border-color: var(--red); background: rgba(226,19,19,0.08); }
+  .settings svg { width: 17px; height: 17px; }
+
+
+  .center {
+    position: absolute; top: 249px; left: 50%;
+    transform: translateX(-50%);
+    width: min(520px, 88vw);
   }
 
-  .logo {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    text-decoration: none;
-    user-select: none;
+  .eyebrow {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 14px;
   }
-  .logo-icon {
+  .dot {
+    width: 7px; height: 7px; border-radius: 50%;
     background: var(--red);
+    box-shadow: 0 0 0 3px rgba(226,19,19,0.18);
+    animation: pulse 2.2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 3px rgba(226,19,19,0.18); }
+    50%      { box-shadow: 0 0 0 6px rgba(226,19,19,0.05); }
+  }
+
+
+  .search {
+    display: flex; align-items: center; gap: 12px;
+    height: 50px; padding: 0 16px;
+    background: var(--panel);
+    border: 1px solid var(--border-strong);
     border-radius: 6px;
-    width: 34px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    box-shadow: 0 0 60px -20px rgba(226,19,19,0.35);
+    transition: border-color .15s, box-shadow .15s;
   }
-  .logo-icon svg { width: 14px; height: 14px; fill: white; }
-  .logo-text {
-    font-size: 18px;
-    font-weight: 700;
+  .search:focus-within {
+    border-color: var(--red);
+    box-shadow: 0 0 40px -10px rgba(226,19,19,0.55);
+  }
+  .prompt { color: var(--red); font-weight: 700; font-size: 14px; user-select: none; }
+  .search input {
+    flex: 1; min-width: 0;
+    background: transparent; border: 0; outline: 0;
     color: var(--text);
-    letter-spacing: -0.5px;
+    font-family: var(--mono); font-size: 13.5px;
+    caret-color: var(--red);
   }
+  .search input::placeholder { color: var(--muted); }
 
-  .search-bar {
-    display: flex;
-    align-items: center;
-    gap: 0;
-    max-width: 560px;
-    width: 100%;
+  .hint {
+    margin-top: 10px;
+    font-size: 11px; color: var(--muted); letter-spacing: 0.05em;
   }
-  .search-bar input {
-    flex: 1;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-right: none;
-    border-radius: 20px 0 0 20px;
-    padding: 8px 16px;
-    font-size: 15px;
-    color: var(--text);
-    outline: none;
-    height: 38px;
-  }
-  .search-bar input:focus { border-color: #1c62b9; }
-  .search-btn {
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    border-radius: 0 20px 20px 0;
-    height: 38px;
-    width: 60px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text);
-  }
-  .search-btn:hover { background: #444; }
-  .search-btn svg { width: 18px; height: 18px; fill: var(--text); }
+  .hint b { color: var(--red); font-weight: 600; }
 
-  .header-right { display: flex; align-items: center; gap: 8px; }
-  .icon-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--text);
-    padding: 8px;
-    border-radius: 50%;
-    display: flex;
-  }
-  .icon-btn:hover { background: var(--bg3); }
-  .icon-btn svg { width: 22px; height: 22px; fill: var(--text); }
 
-  /* ── Sidebar ── */
-  aside {
-    position: fixed;
-    top: 56px; left: 0; bottom: 0;
-    width: var(--sidebar-w);
-    background: var(--bg);
-    overflow-y: auto;
-    padding: 12px 0;
-    border-right: 1px solid var(--border);
-    transition: transform 0.2s;
+  .clock {
+    position: absolute; left: 28px; bottom: 24px;
+    font-size: 11.5px; color: var(--muted); letter-spacing: 0.08em;
   }
+  .clock b { color: var(--red); font-weight: 600; }
 
-  aside.closed { transform: translateX(calc(-1 * var(--sidebar-w))); }
-
-  .sidebar-item {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    padding: 10px 16px;
-    cursor: pointer;
-    border-radius: 10px;
-    margin: 0 8px;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--text);
-    text-decoration: none;
-  }
-  .sidebar-item:hover { background: var(--bg3); }
-  .sidebar-item.active { background: var(--bg3); }
-  .sidebar-item svg { width: 22px; height: 22px; flex-shrink: 0; fill: var(--text); }
-  .sidebar-divider {
-    border: none;
-    border-top: 1px solid var(--border);
-    margin: 12px 0;
-  }
-  .sidebar-section-title {
-    padding: 8px 16px;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text2);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  /* ── Main ── */
-  main {
-    margin-top: 56px;
-    margin-left: var(--sidebar-w);
-    padding: 24px 16px;
-    min-height: calc(100vh - 56px);
-    transition: margin-left 0.2s;
-  }
-  main.full { margin-left: 0; }
-
-  /* chips */
-  .chips {
-    display: flex;
-    gap: 8px;
-    overflow-x: auto;
-    padding-bottom: 16px;
-    scrollbar-width: none;
-  }
-  .chips::-webkit-scrollbar { display: none; }
-  .chip {
-    background: var(--text);
-    color: var(--bg);
-    border: none;
-    border-radius: 8px;
-    padding: 6px 14px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
-  .chip:hover { opacity: 0.85; }
-  .chip.outline {
-    background: var(--bg3);
-    color: var(--text);
-  }
-  .chip.outline:hover { background: #444; }
-
-  /* grid */
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 20px 16px;
-    margin-top: 8px;
-  }
-
-  .card {
-    cursor: pointer;
-    border-radius: 12px;
-    overflow: hidden;
-    background: var(--bg);
-    text-decoration: none;
-    color: var(--text);
-    display: block;
-  }
-  .card:hover .thumb { transform: scale(1.04); }
-
-  .thumb-wrap {
-    aspect-ratio: 16/9;
-    overflow: hidden;
-    border-radius: 12px;
-    background: var(--bg3);
-    position: relative;
-  }
-  .thumb {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    transition: transform 0.25s ease;
-  }
-  .thumb-fallback {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    background: var(--bg2);
-  }
-  .thumb-fallback svg { width: 52px; height: 52px; fill: var(--red); opacity: 0.8; }
-  .thumb-fallback span { font-size: 13px; color: var(--text2); }
-
-  .duration-badge {
-    position: absolute;
-    bottom: 6px; right: 6px;
-    background: rgba(0,0,0,0.8);
-    color: #fff;
-    font-size: 12px;
-    font-weight: 600;
-    padding: 2px 5px;
-    border-radius: 4px;
-    letter-spacing: 0.3px;
-  }
-
-  .card-info {
-    display: flex;
-    gap: 12px;
-    padding: 12px 4px 8px;
-  }
-  .avatar {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: var(--red);
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 15px;
-    color: white;
-    margin-top: 2px;
-  }
-  .card-meta { flex: 1; overflow: hidden; }
-  .card-title {
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 1.4;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    margin-bottom: 4px;
-  }
-  .card-sub {
-    font-size: 13px;
-    color: var(--text2);
-    line-height: 1.5;
-  }
-
-  /* ── Player modal ── */
-  #player-modal {
-    display: none;
-    position: fixed;
-    inset: 0;
-    z-index: 200;
-    background: rgba(0,0,0,0.85);
-    align-items: center;
-    justify-content: center;
-  }
-  #player-modal.open { display: flex; }
-
-  .player-box {
-    background: var(--bg);
-    border-radius: 12px;
-    width: min(900px, 95vw);
-    max-height: 95vh;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-  }
-  .player-close {
-    position: absolute;
-    top: 10px; right: 12px;
-    background: rgba(0,0,0,0.6);
-    border: none;
-    color: #fff;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    font-size: 20px;
-    cursor: pointer;
-    z-index: 10;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .player-close:hover { background: rgba(255,255,255,0.15); }
-
-  .player-embed {
-    aspect-ratio: 16/9;
-    width: 100%;
-    background: #000;
-  }
-  .player-embed iframe {
-    width: 100%;
-    height: 100%;
-    border: none;
-    display: block;
-  }
-  .player-info {
-    padding: 16px 20px;
-    overflow-y: auto;
-  }
-  .player-title {
-    font-size: 18px;
-    font-weight: 700;
-    line-height: 1.4;
-    margin-bottom: 8px;
-  }
-  .player-actions {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-  .action-pill {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    background: var(--bg3);
-    border: none;
-    border-radius: 20px;
-    padding: 8px 14px;
-    color: var(--text);
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-  }
-  .action-pill:hover { background: #444; }
-  .action-pill svg { width: 18px; height: 18px; fill: var(--text); }
-
-  /* ── Empty / Loading / Error states ── */
-  .state-box {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-    padding: 80px 24px;
-    text-align: center;
-  }
-  .state-box svg { width: 72px; height: 72px; fill: var(--text2); opacity: 0.4; }
-  .state-box h2 { font-size: 20px; font-weight: 600; color: var(--text2); }
-  .state-box p { font-size: 14px; color: var(--text2); max-width: 340px; line-height: 1.6; }
-
-  .loader {
-    display: flex;
-    gap: 8px;
-    justify-content: center;
-    padding: 60px 0;
-  }
-  .loader span {
-    width: 10px; height: 10px;
-    background: var(--red);
-    border-radius: 50%;
-    animation: bounce 0.9s infinite ease-in-out;
-  }
-  .loader span:nth-child(2) { animation-delay: 0.15s; }
-  .loader span:nth-child(3) { animation-delay: 0.3s; }
-  @keyframes bounce {
-    0%, 80%, 100% { transform: scale(0.7); opacity: 0.4; }
-    40% { transform: scale(1); opacity: 1; }
-  }
-
-  /* ── Search filter ── */
-  #no-results { display: none; }
-
-  /* ── Responsive ── */
-  @media (max-width: 768px) {
-    aside { transform: translateX(calc(-1 * var(--sidebar-w))); }
-    aside.mobile-open { transform: translateX(0); }
-    main { margin-left: 0 !important; }
-    .search-bar { max-width: 220px; }
-    .grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px 10px; }
+  @media (max-width: 700px) {
+    .center { top: 32vh; }
   }
 </style>
 </head>
 <body>
+  <div class="wallpaper"></div>
 
-<!-- ── Header ── -->
-<header>
-  <div class="header-left">
-    <button class="menu-btn" id="menuBtn" aria-label="Toggle sidebar">
-      <span></span><span></span><span></span>
+  <div class="page">
+    <button class="settings" id="settingsBtn" title="Set background image" aria-label="Settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>
+      </svg>
     </button>
-    <a class="logo" href="#">
-      <div class="logo-icon">
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M8 5v14l11-7z"/>
-        </svg>
-      </div>
-      <span class="logo-text">Youtweeb</span>
-    </a>
-  </div>
 
-  <div class="search-bar">
-    <input type="text" id="searchInput" placeholder="Search" autocomplete="off">
-    <button class="search-btn" aria-label="Search">
-      <svg viewBox="0 0 24 24"><path d="M21 21l-4.35-4.35m0 0A7 7 0 1 0 6.15 6.15a7 7 0 0 0 10.5 10.5z" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
-    </button>
-  </div>
-
-  <div class="header-right">
-    <button class="icon-btn" aria-label="Notifications">
-      <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
-    </button>
-    <button class="icon-btn" aria-label="Account">
-      <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
-    </button>
-  </div>
-</header>
-
-<!-- ── Sidebar ── -->
-<aside id="sidebar">
-  <a class="sidebar-item active" href="#">
-    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/><polyline points="9 22 9 12 15 12 15 22" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
-    Home
-  </a>
-  <a class="sidebar-item" href="#">
-    <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
-    Shorts
-  </a>
-  <a class="sidebar-item" href="#">
-    <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
-    Subscriptions
-  </a>
-  <hr class="sidebar-divider">
-  <div class="sidebar-section-title">You</div>
-  <a class="sidebar-item" href="#">
-    <svg viewBox="0 0 24 24"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.54C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z" stroke="currentColor" stroke-width="2" fill="none"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" stroke="currentColor" stroke-width="2" fill="none"/></svg>
-    Your videos
-  </a>
-  <a class="sidebar-item" href="#">
-    <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke="currentColor" stroke-width="2" fill="none"/></svg>
-    Liked videos
-  </a>
-  <a class="sidebar-item" href="#">
-    <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="currentColor" stroke-width="2" fill="none"/></svg>
-    Watch later
-  </a>
-  <hr class="sidebar-divider">
-  <div class="sidebar-section-title">Explore</div>
-  <a class="sidebar-item" href="#">
-    <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
-    Trending
-  </a>
-  <a class="sidebar-item" href="#">
-    <svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13M9 18c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zM21 16c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2z" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
-    Music
-  </a>
-  <a class="sidebar-item" href="#">
-    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/><polygon points="10 8 16 12 10 16 10 8" stroke="currentColor" stroke-width="2" fill="none"/></svg>
-    Gaming
-  </a>
-</aside>
-
-<!-- ── Main Content ── -->
-<main id="main">
-  <!-- Category chips -->
-  <div class="chips" id="chips">
-    <button class="chip" onclick="filterCategory('all')">All</button>
-    <button class="chip outline" onclick="filterCategory('music')">Music</button>
-    <button class="chip outline" onclick="filterCategory('gaming')">Gaming</button>
-    <button class="chip outline" onclick="filterCategory('news')">News</button>
-    <button class="chip outline" onclick="filterCategory('sports')">Sports</button>
-    <button class="chip outline" onclick="filterCategory('learning')">Learning</button>
-    <button class="chip outline" onclick="filterCategory('live')">Live</button>
-  </div>
-
-  <!-- Loading -->
-  <div class="loader" id="loader">
-    <span></span><span></span><span></span>
-  </div>
-
-  <!-- Video grid -->
-  <div class="grid" id="grid" style="display:none"></div>
-
-  <!-- Empty state -->
-  <div class="state-box" id="emptyState" style="display:none">
-    <svg viewBox="0 0 24 24"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.54C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/></svg>
-    <h2>No videos yet</h2>
-    <p>Add YouTube URLs to your <code>url.txt</code> file (one per line) and they'll appear here automatically.</p>
-  </div>
-
-  <!-- No search results -->
-  <div class="state-box" id="no-results" style="display:none">
-    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2" fill="none"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
-    <h2>No results found</h2>
-    <p>Try different keywords or clear your search.</p>
-  </div>
-
-  <!-- Error state -->
-  <div class="state-box" id="errorState" style="display:none">
-    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/><line x1="12" y1="8" x2="12" y2="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/><line x1="12" y1="16" x2="12.01" y2="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
-    <h2>Couldn't load videos</h2>
-    <p>Make sure your <code>url.txt</code> is reachable and contains valid YouTube URLs, one per line.</p>
-  </div>
-</main>
-
-<!-- ── Player Modal ── -->
-<div id="player-modal" role="dialog" aria-modal="true" aria-label="Video player">
-  <div class="player-box">
-    <button class="player-close" id="playerClose" aria-label="Close player">✕</button>
-    <div class="player-embed">
-      <iframe id="playerFrame" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+    <div class="center">
+      <div class="eyebrow"><span class="dot"></span>Ready</div>
+      <form class="search" id="searchForm" autocomplete="off">
+        <span class="prompt">&gt;_</span>
+        <input id="q" type="text" placeholder="Ask anything, find anything..." autofocus>
+      </form>
+      <div class="hint">Searching with <b>Brave Search</b> · press <b>Enter</b> to search or open a URL</div>
     </div>
-    <div class="player-info">
-      <div class="player-title" id="playerTitle">Video</div>
-      <div class="player-actions">
-        <button class="action-pill">
-          <svg viewBox="0 0 24 24"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
-          Like
-        </button>
-        <button class="action-pill">
-          <svg viewBox="0 0 24 24"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zM17 2h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
-          Dislike
-        </button>
-        <button class="action-pill">
-          <svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="6" cy="12" r="3" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="18" cy="19" r="3" stroke="currentColor" stroke-width="2" fill="none"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
-          Share
-        </button>
-        <button class="action-pill">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1" fill="currentColor"/><circle cx="19" cy="12" r="1" fill="currentColor"/><circle cx="5" cy="12" r="1" fill="currentColor"/></svg>
-          More
-        </button>
-      </div>
-    </div>
+
+    <div class="clock" id="clock"></div>
   </div>
-</div>
 
 <script>
-const URL_SOURCE = 'https://raw.githubusercontent.com/IVPCodes/youtweeb/refs/heads/main/url.txt';
-const PROXY = 'https://api.allorigins.win/raw?url=';
 
-let allVideos = [];
-let currentQuery = '';
+  const SEARCH_URL = "https://search.brave.com/search?q=";
 
-function extractVideoId(url) {
-  try {
-    const u = new URL(url.trim());
-    if (u.hostname === 'youtu.be') return u.pathname.slice(1).split('?')[0];
-    if (u.hostname.includes('youtube.com')) {
-      if (u.pathname.startsWith('/shorts/')) return u.pathname.split('/')[2];
-      return u.searchParams.get('v');
-    }
-  } catch {}
-  const m = url.match(/(?:v=|youtu\.be\/|shorts\/)([A-Za-z0-9_-]{11})/);
-  return m ? m[1] : null;
-}
-
-function thumbUrl(id) {
-  return `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
-}
-
-function titleFromId(id) {
-  return `Video · ${id}`;
-}
-
-function randomViews() {
-  const n = Math.floor(Math.random() * 9000000) + 1000;
-  if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M views';
-  if (n >= 1000) return Math.round(n / 1000) + 'K views';
-  return n + ' views';
-}
-
-function randomTime() {
-  const units = ['hours', 'days', 'weeks', 'months'];
-  const vals  = [3, 24, 12, 8];
-  const i = Math.floor(Math.random() * units.length);
-  const v = Math.floor(Math.random() * vals[i]) + 1;
-  return `${v} ${units[i]} ago`;
-}
-
-function avatarLetter(id) {
-  return id.charAt(0).toUpperCase();
-}
-
-function avatarColor(id) {
-  const colors = ['#c00', '#b06000', '#007a5e', '#0066cc', '#6a3ebf', '#c0006e'];
-  let h = 0;
-  for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) & 0xffff;
-  return colors[h % colors.length];
-}
-
-function renderCard(video, index) {
-  const { id } = video;
-  const views = randomViews();
-  const ago   = randomTime();
-  const col   = avatarColor(id);
-  const letter = avatarLetter(id);
-  const title = `Watch · ${id}`;
-
-  return `
-    <div class="card" data-index="${index}" data-id="${id}" data-title="${title}" onclick="openPlayer('${id}','${title}')">
-      <div class="thumb-wrap">
-        <img class="thumb" src="${thumbUrl(id)}" alt="${title}"
-          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-        <div class="thumb-fallback" style="display:none">
-          <svg viewBox="0 0 24 24"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.54C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/></svg>
-          <span>Youtweeb</span>
-        </div>
-      </div>
-      <div class="card-info">
-        <div class="avatar" style="background:${col}">${letter}</div>
-        <div class="card-meta">
-          <div class="card-title">${title}</div>
-          <div class="card-sub">${views} · ${ago}</div>
-        </div>
-      </div>
-    </div>`;
-}
-
-function renderGrid(videos) {
-  const grid = document.getElementById('grid');
-  const empty = document.getElementById('emptyState');
-  const noRes = document.getElementById('no-results');
-
-  if (videos.length === 0) {
-    grid.style.display = 'none';
-    if (currentQuery) {
-      noRes.style.display = 'flex';
-      empty.style.display = 'none';
-    } else {
-      empty.style.display = 'flex';
-      noRes.style.display = 'none';
-    }
-    return;
-  }
-
-  noRes.style.display = 'none';
-  empty.style.display = 'none';
-  grid.style.display  = 'grid';
-  grid.innerHTML = videos.map((v, i) => renderCard(v, i)).join('');
-}
-
-function filterCategory(cat) {
-  document.querySelectorAll('.chip').forEach(c => {
-    c.classList.toggle('outline', c.textContent.toLowerCase() !== cat && cat !== 'all');
-    if (cat === 'all') c.classList.remove('outline');
-    else if (c.textContent.toLowerCase() === cat) c.classList.remove('outline');
-    else c.classList.add('outline');
+  document.getElementById("searchForm").addEventListener("submit", e => {
+    e.preventDefault();
+    const v = document.getElementById("q").value.trim();
+    if (!v) return;
+    const looksLikeUrl = /^(https?:\/\/)?([\w-]+\.)+[a-z]{2,}(\/\S*)?$/i.test(v);
+    window.location.href = looksLikeUrl
+      ? (/^https?:\/\//i.test(v) ? v : "https://" + v)
+      : SEARCH_URL + encodeURIComponent(v);
   });
-  renderGrid(allVideos);
-}
 
-function openPlayer(id, title) {
-  document.getElementById('playerFrame').src =
-    `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
-  document.getElementById('playerTitle').textContent = title;
-  document.getElementById('player-modal').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-
-function closePlayer() {
-  document.getElementById('player-modal').classList.remove('open');
-  document.getElementById('playerFrame').src = '';
-  document.body.style.overflow = '';
-}
-
-document.getElementById('playerClose').addEventListener('click', closePlayer);
-document.getElementById('player-modal').addEventListener('click', e => {
-  if (e.target === document.getElementById('player-modal')) closePlayer();
-});
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closePlayer();
-});
-
-let sidebarOpen = true;
-document.getElementById('menuBtn').addEventListener('click', () => {
-  const sidebar = document.getElementById('sidebar');
-  const main    = document.getElementById('main');
-  const isMobile = window.innerWidth <= 768;
-  if (isMobile) {
-    sidebar.classList.toggle('mobile-open');
-  } else {
-    sidebarOpen = !sidebarOpen;
-    sidebar.classList.toggle('closed', !sidebarOpen);
-    main.classList.toggle('full', !sidebarOpen);
+  // Clock
+  function tick() {
+    const d = new Date();
+    const pad = n => String(n).padStart(2, "0");
+    document.getElementById("clock").innerHTML =
+      "<b>$</b> " + pad(d.getHours()) + ":" + pad(d.getMinutes()) + " · " +
+      d.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
   }
-});
+  tick(); setInterval(tick, 15000);
 
-document.getElementById('searchInput').addEventListener('input', e => {
-  currentQuery = e.target.value.toLowerCase().trim();
-  if (!currentQuery) {
-    renderGrid(allVideos);
-    return;
+
+  function applyBg(url) {
+    document.documentElement.style.setProperty("--bg-image", url ? 'url("' + url + '")' : "none");
   }
-  const filtered = allVideos.filter(v => v.id.toLowerCase().includes(currentQuery));
-  renderGrid(filtered);
-});
+  try { applyBg(localStorage.getItem("ntp_bg") || ""); } catch (e) {}
 
-async function fetchVideos() {
-  const loader = document.getElementById('loader');
-  const error  = document.getElementById('errorState');
-
-  try {
-    let text = '';
-    try {
-      const r = await fetch(URL_SOURCE);
-      if (r.ok) text = await r.text();
-      else throw new Error('direct failed');
-    } catch {
-      const r2 = await fetch(PROXY + encodeURIComponent(URL_SOURCE));
-      if (r2.ok) text = await r2.text();
-      else throw new Error('proxy also failed');
-    }
-
-    const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
-    allVideos = lines.map(url => {
-      const id = extractVideoId(url);
-      return id ? { id, url } : null;
-    }).filter(Boolean);
-
-    loader.style.display  = 'none';
-    renderGrid(allVideos);
-
-  } catch (err) {
-    loader.style.display   = 'none';
-    error.style.display    = 'flex';
-    console.error('Youtweeb: failed to load videos:', err);
-  }
-}
-
-fetchVideos();
+  document.getElementById("settingsBtn").addEventListener("click", () => {
+    const url = prompt("Background image URL (empty or 'reset' to clear):");
+    if (url === null) return;
+    const clean = (url.trim().toLowerCase() === "reset") ? "" : url.trim();
+    applyBg(clean);
+    try { localStorage.setItem("ntp_bg", clean); } catch (e) {}
+  });
 </script>
 </body>
 </html>
